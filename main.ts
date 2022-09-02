@@ -1,4 +1,12 @@
 import { serve } from "https://deno.land/std@0.153.0/http/server.ts";
+import init, { World } from "./pkg/nextjs_rust_playground_server.js";
+
+await init();
+const world = new World();
+
+console.log(world);
+
+console.log("world.state", world.state);
 
 const PORT = 8080;
 

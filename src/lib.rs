@@ -25,14 +25,14 @@ pub struct Movable {
   y: f32,
 }
 
-enum Component {
-  Renderable(Renderable),
-  Movable(Movable),
+enum Entity {
+  Renderable(Option<Renderable>),
+  Movable(Option<Movable>),
 }
 
 #[wasm_bindgen]
 pub struct World {
-  components: Vec<Component>,
+  entities: Vec<Entity>,
 }
 
 #[wasm_bindgen]
@@ -43,7 +43,7 @@ impl World {
 
     //webgl::start().unwrap();
 
-    World { components: vec![] }
+    World { entities: vec![] }
   }
 
   #[wasm_bindgen(getter)]
