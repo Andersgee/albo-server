@@ -4,7 +4,7 @@ const port = 8080;
 
 const sockets: Map<number, WebSocket> = new Map();
 
-const entities = { hej: 99 };
+const entities = { hej: 0 };
 
 const TICKS_PER_SECOND = 1;
 const TICK_DURATION_MS = 1000 / TICKS_PER_SECOND;
@@ -31,7 +31,7 @@ function maybeStopGameLoop() {
   if ([...sockets.keys()].length < 1 && intervalId) {
     clearInterval(intervalId);
     intervalId = null;
-    console.log("stopped game loop");
+    console.log("stopped game loop (no connected sockets)");
   }
 }
 
@@ -52,22 +52,31 @@ await serve(
 
     socket.onopen = () => {
       sockets.set(id, socket);
-      console.log("socket opened");
+      console.log("onopen");
       maybeStartGameLoop();
     };
-    socket.onmessage = (e) => {
-      //handle player input here
-      console.log("socket message:", e.data);
-      //socket.send("recieved input");
+    socket.onmessage = ({ data }) => {
+      //data can be string | ArrayBuffer | Blob
+      //console.log('typeof data == "string"', typeof data == "string");
+      //console.log("data instanceof ArrayBuffer", data instanceof ArrayBuffer);
+      //console.log("data instanceof Blob", data instanceof Blob);
+
+      if (data instanceof ArrayBuffer) {
+        const playerInput = new Uint8Array(data);
+
+        const [stepForward, stepBackward, stepLeft, stepRight] = playerInput;
+        //console.log("stepForward:", stepForward);
+        console.log("playerInput:", playerInput);
+      }
     };
     socket.onerror = (e) => {
       sockets.delete(id);
-      console.log("socket errored:", e);
+      console.log("onerror:", e);
       maybeStopGameLoop();
     };
     socket.onclose = () => {
       sockets.delete(id);
-      console.log("socket closed");
+      console.log("onclose");
       maybeStopGameLoop();
     };
 
