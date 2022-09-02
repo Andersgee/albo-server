@@ -1,7 +1,8 @@
 # lowpoly-battle-server
 
 ```sh
-deno run --allow-net main.ts
+wasm-pack build --target web
+deno run --allow-net --allow-read main.ts
 ```
 
 ## notes to self / todo / goal
