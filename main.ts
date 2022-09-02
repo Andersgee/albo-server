@@ -1,8 +1,9 @@
 import { serve } from "https://deno.land/std@0.153.0/http/server.ts";
 
-const port = 8080;
+const PORT = 8080;
 
 const sockets: Map<number, WebSocket> = new Map();
+const playerInputs: Map<number, Uint8Array> = new Map();
 
 const entities = { hej: 0 };
 
@@ -63,6 +64,7 @@ await serve(
 
       if (data instanceof ArrayBuffer) {
         const playerInput = new Uint8Array(data);
+        playerInputs.set(id, playerInput);
 
         const [stepForward, stepBackward, stepLeft, stepRight] = playerInput;
         //console.log("stepForward:", stepForward);
@@ -83,9 +85,9 @@ await serve(
     return response;
   },
   {
-    port,
+    port: PORT,
     onListen: () => {
-      console.log(`Server listening on ${port}`);
+      console.log(`Server listening on ${PORT}`);
     },
     onError: (e: unknown) => {
       console.error("Server error", e);
@@ -95,35 +97,3 @@ await serve(
     },
   }
 );
-/*
-async function handleConn(conn: Deno.Conn) {
-  const httpConn = Deno.serveHttp(conn);
-  for await (const e of httpConn) {
-    e.respondWith(handle(e.request));
-  }
-}
-
-function handle(req: Request) {
-  if (req.headers.get("upgrade") != "websocket") {
-    //return new Response("not trying to upgrade as websocket.");
-    return new Response(null, { status: 501 });
-  }
-  const { socket, response } = Deno.upgradeWebSocket(req);
-  socket.onopen = () => console.log("socket opened");
-  socket.onmessage = (e) => {
-    //handle player input here
-    console.log("socket message:", e.data);
-    socket.send(new Date().toString());
-  };
-  socket.onerror = (e) => console.log("socket errored:", e);
-  socket.onclose = () => console.log("socket closed");
-
-  return response;
-}
-
-const listener = Deno.listen({ port: 8080 });
-console.log("listening on http://localhost:8080");
-for await (const conn of listener) {
-  handleConn(conn);
-}
-*/
