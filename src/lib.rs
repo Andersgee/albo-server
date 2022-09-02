@@ -1,5 +1,5 @@
+use wasm_bindgen::prelude::*;
 //use js_sys::Uint8Array;
-//use wasm_bindgen::prelude::*;
 
 //tutorial writing a tiny ECS in rust
 //https://ianjk.com/ecs-in-rust/
@@ -7,16 +7,26 @@
 struct Health(i32);
 struct Name(&'static str);
 
+#[wasm_bindgen]
 struct World {
   health_components: Vec<Option<Health>>,
   name_components: Vec<Option<Name>>,
 }
+
+#[wasm_bindgen]
 impl World {
-  fn new() -> Self {
-    Self {
+  #[wasm_bindgen(constructor)]
+  pub fn new() -> World {
+    World {
       health_components: Vec::new(),
       name_components: Vec::new(),
     }
+  }
+
+  #[wasm_bindgen(getter)]
+  pub fn state(&self) -> f64 {
+    //placeholder for now
+    3.1
   }
 
   fn new_entity(&mut self, health: Option<Health>, name: Option<Name>) {
