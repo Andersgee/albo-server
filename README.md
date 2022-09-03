@@ -5,6 +5,10 @@ wasm-pack build --target web
 deno run --allow-net --allow-read main.ts
 ```
 
+```sh
+cargo test -- --nocapture
+```
+
 ## notes to self / todo / goal
 
 - goal is learning general "rust" -> "wasm" -> "use it from js" workflow
