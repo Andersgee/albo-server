@@ -32,5 +32,7 @@ summary on plan:
 - lets pick wasm for game state update which is on server, which means in fact server could be pure rust.. but thats not the goal. In any case, go with the plan and wrap it it with a deno websocket server.
 
   - use some rust Entity Component System or write my own? probably write my own as learning experience.
+    - I like the look of [Legion](https://github.com/amethyst/legion).
+    - The full fledged option would be [Bevy](https://github.com/bevyengine/bevy).
 
 - When/if something heavier need to be done on client, can try rust-wasm there aswell, for example game state interpolation or something.
