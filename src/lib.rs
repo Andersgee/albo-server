@@ -120,9 +120,10 @@ impl World {
 
 fn hej() {
   let mut world = World::new();
+  let id = world.new_entity();
 
-  world.add_component_to_entity(0, Health(100));
-  world.add_component_to_entity(0, Name("Somebody"));
+  world.add_component_to_entity(id, Health(100));
+  world.add_component_to_entity(id, Name("Somebody"));
 
   let mut healths = world.borrow_component_vec::<Health>().unwrap();
   let mut names = world.borrow_component_vec::<Name>().unwrap();
