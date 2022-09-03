@@ -6,7 +6,7 @@ use wasm_bindgen::prelude::*;
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 #[wasm_bindgen]
-struct Position {
+pub struct Position {
   x: f32,
   y: f32,
 }
@@ -44,24 +44,75 @@ impl Game {
   pub fn stuff(&self) -> Array {
     let mut query = <&Position>::query();
 
-    // you can then iterate through the components found in the world
+    //let vec_of_positionrefs = query.iter(&self.world).collect();
+
     for position in query.iter(&self.world) {
       println!("{:?}", position);
     }
 
+    let b: Vec<&Position> = query.iter(&self.world).collect();
+    let c = clone_vec(b);
+
+    let res = c.into_iter().map(JsValue::from).collect();
+    res
+    /*
+        let kaka = vec![JsValue::NULL, JsValue::UNDEFINED];
+        let res = c.into_iter().map(JsValue::from).collect();
+    */
+    //let res = c.into_iter().map(JsValue::from).collect();
+
+    //1.2
+
+    //let vec_of_position = clone_vec(vec_of_positionrefs);
+
+    //println!("vec_of_position");
+
+    //vec_of_positionrefs..map(JsValue::from).collect()
+
+    //let res = vec_of_position.into_iter().map(JsValue::from).collect();
+    //res
+
+    // you can then iterate through the components found in the world
+    /*
+    let mut vec_of_position: Vec<Position> = vec![];
+    for position in query.iter(&self.world) {
+      println!("{:?}", position);
+      vec_of_position.push(Position {
+        x: position.x.clone(),
+        y: position.y.clone(),
+      })
+    }
+    let res = vec_of_position.into_iter().map(JsValue::from).collect();
+    res
+    */
+
+    /*
     println!("From inside stuff");
 
     let vec_of_positionrefs = query.iter(&self.world).collect::<Vec<&Position>>();
     println!("vec_of_positionrefs {:?}", vec_of_positionrefs);
 
-    let vec_of_position: Vec<Position> = query.iter(&self.world).cloned().collect();
-    //let kek = mama.into_iter().map(Array::from).collect();
-    //kek
+    //let vec_of_position = query.iter(&self.world).cloned().collect::<Vec<Position>>();
+    let iterthing = query.iter(&self.world);
 
-    //let vec_of_position: Vec<Position> = vec![];
+    let vec_of_position = query
+      .iter(&self.world)
+      .cloned()
+      .cloned()
+      .collect::<Vec<Position>>();
+
     let res = vec_of_position.into_iter().map(JsValue::from).collect();
     res
+    */
   }
+}
+
+pub fn clone_vec<T: Clone>(vec: Vec<&T>) -> Vec<T> {
+  vec.into_iter().cloned().collect()
+}
+
+pub fn clone_slice<T: Clone>(slice: &[&T]) -> Vec<T> {
+  slice.iter().cloned().cloned().collect()
 }
 
 pub fn add(left: usize, right: usize) -> usize {
