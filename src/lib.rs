@@ -1,9 +1,11 @@
+use js_sys::Array;
 use legion::*;
 use wasm_bindgen::prelude::*;
 //use js_sys::Uint8Array;
 //use std::cell::{RefCell, RefMut};
 
 #[derive(Clone, Copy, Debug, PartialEq)]
+#[wasm_bindgen]
 struct Position {
   x: f32,
   y: f32,
@@ -39,7 +41,7 @@ impl Game {
   }
 
   #[wasm_bindgen(getter)]
-  pub fn stuff(&self) -> f32 {
+  pub fn stuff(&self) -> Array {
     let mut query = <&Position>::query();
 
     // you can then iterate through the components found in the world
@@ -49,7 +51,16 @@ impl Game {
 
     println!("From inside stuff");
 
-    self.kek
+    let vec_of_positionrefs = query.iter(&self.world).collect::<Vec<&Position>>();
+    println!("vec_of_positionrefs {:?}", vec_of_positionrefs);
+
+    let vec_of_position: Vec<Position> = query.iter(&self.world).cloned().collect();
+    //let kek = mama.into_iter().map(Array::from).collect();
+    //kek
+
+    //let vec_of_position: Vec<Position> = vec![];
+    let res = vec_of_position.into_iter().map(JsValue::from).collect();
+    res
   }
 }
 

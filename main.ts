@@ -5,9 +5,9 @@ await init();
 const game = new Game();
 
 console.log(game);
-console.log(game.stuff);
 
 console.log("game.state", game.state);
+console.log("game.stuff", game.stuff);
 
 const PORT = 8080;
 
