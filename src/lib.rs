@@ -13,7 +13,7 @@ pub struct Position {
   x: f32,
   y: f32,
 }
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
 struct Velocity {
   dx: f32,
   dy: f32,
@@ -65,8 +65,17 @@ impl Game {
 
   #[wasm_bindgen(getter)]
   pub fn stuff(&self) -> Array {
-    let mut query = <&Position>::query();
+    //let mut query = <&Position>::query();
 
+    let mut query = <(&Velocity, &Position)>::query();
+
+    let baba: Array = query
+      .iter(&self.world)
+      .map(|p| JsValue::from_serde(&p).unwrap())
+      .collect();
+
+    baba
+    /*
     let vec_of_positionrefs = query.iter(&self.world).collect::<Vec<&Position>>();
 
     //vec to js array
@@ -75,7 +84,7 @@ impl Game {
       .map(|p| JsValue::from_serde(p).unwrap())
       .collect();
 
-    res
+    res */
     /*
        let mut a = Array::new();
        for position in query.iter(&self.world) {
