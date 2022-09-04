@@ -46,6 +46,8 @@ impl Game {
     let _entity2: Entity =
       world.push((Position { x: 1.2, y: 3.4 }, Velocity { dx: 88.0, dy: 9.2 }));
 
+    let _entity3: Entity = world.push((Position { x: 0.2, y: 5.6 },));
+
     Self {
       world,
       kek: 1.2,
@@ -61,7 +63,7 @@ impl Game {
 
   #[wasm_bindgen(getter)]
   pub fn stuff(&self) -> Array {
-    let mut query = <(&Velocity, &Position)>::query();
+    let mut query = <(Option<&Velocity>, &Position)>::query();
     let js_array: Array = query
       .iter(&self.world)
       .map(|p| JsValue::from_serde(&p).unwrap())
@@ -71,13 +73,13 @@ impl Game {
   }
 
   pub fn run_systems(&mut self) -> i32 {
-    update_positions(&mut self.world);
+    update_positions(&mut self.world, &mut self.resources);
 
     1
   }
 }
 
-fn update_positions(world: &mut World) {
+fn update_positions(world: &mut World, resources: &mut Resources) {
   let mut query = <(&Velocity, &mut Position)>::query();
 
   for (velocity, position) in query.iter_mut(world) {
