@@ -37,6 +37,6 @@ summary on plan:
 
   - use some rust Entity Component System or write my own? probably write my own as learning experience.
     - I like the look of [Legion](https://github.com/amethyst/legion).
-    - The full fledged option would be [Bevy](https://github.com/bevyengine/bevy), and this is server side after all.
+    - The full fledged framework would be [Bevy](https://github.com/bevyengine/bevy).
 
 - When/if something heavier need to be done on client, can try rust-wasm there aswell, for example game state interpolation or something.

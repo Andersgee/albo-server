@@ -9,7 +9,7 @@ edition = "2021"
 crate-type = ["cdylib"]
 
 [dependencies]
-legion = { version = "*", default-features = false, features = ["wasm-bindgen"] }
+legion = { version = "*", default-features = false, features = ["wasm-bindgen", "codegen"] }
 wasm-bindgen = { version = "0.2.82", features = ["serde-serialize"] }
 js-sys = "0.3.59"
 serde = { version = "1.0.144", features = ["derive"] }

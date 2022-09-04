@@ -1,8 +1,7 @@
-use std::collections::HashMap;
-
 use js_sys::Array;
 use legion::*;
 use serde::{Deserialize, Serialize};
+//use std::collections::HashMap;
 use wasm_bindgen::prelude::*;
 
 //use js_sys::Uint8Array;
@@ -19,17 +18,15 @@ struct Velocity {
   dy: f32,
 }
 
+struct Time {
+  elapsed_seconds: f32,
+}
+
 #[wasm_bindgen]
 pub struct Game {
   world: World,
+  resources: Resources,
   kek: f32,
-}
-
-#[derive(Serialize, Deserialize)]
-pub struct Example {
-  pub field1: HashMap<u32, String>,
-  pub field2: Vec<Vec<f32>>,
-  pub field3: [f32; 4],
 }
 
 #[wasm_bindgen]
@@ -37,11 +34,23 @@ impl Game {
   #[wasm_bindgen(constructor)]
   pub fn new() -> Self {
     let mut world = World::default();
+
+    let mut resources = Resources::default();
+    //resources.insert(vec!["Jane Doe", "John Smith"]);
+    let time = Time {
+      elapsed_seconds: 0.0,
+    };
+    resources.insert(time);
+
     let _entity: Entity = world.push((Position { x: 0.0, y: 0.0 }, Velocity { dx: 0.0, dy: 0.0 }));
     let _entity2: Entity =
       world.push((Position { x: 1.2, y: 3.4 }, Velocity { dx: 88.0, dy: 9.2 }));
 
-    Self { world, kek: 1.2 }
+    Self {
+      world,
+      kek: 1.2,
+      resources,
+    }
   }
 
   #[wasm_bindgen(getter)]
@@ -51,137 +60,30 @@ impl Game {
   }
 
   #[wasm_bindgen(getter)]
-  pub fn example(&self) -> JsValue {
-    let mut field1 = HashMap::new();
-    field1.insert(0, String::from("ex"));
-    let example = Example {
-      field1,
-      field2: vec![vec![1., 2.], vec![3., 4.]],
-      field3: [1., 2., 3., 4.],
-    };
-
-    JsValue::from_serde(&example).unwrap()
-  }
-
-  #[wasm_bindgen(getter)]
   pub fn stuff(&self) -> Array {
-    //let mut query = <&Position>::query();
-
     let mut query = <(&Velocity, &Position)>::query();
-
-    let baba: Array = query
+    let js_array: Array = query
       .iter(&self.world)
       .map(|p| JsValue::from_serde(&p).unwrap())
       .collect();
 
-    baba
-    /*
-    let vec_of_positionrefs = query.iter(&self.world).collect::<Vec<&Position>>();
+    js_array
+  }
 
-    //vec to js array
-    let res: Array = vec_of_positionrefs
-      .into_iter()
-      .map(|p| JsValue::from_serde(p).unwrap())
-      .collect();
+  pub fn run_systems(&mut self) -> i32 {
+    update_positions(&mut self.world);
 
-    res */
-    /*
-       let mut a = Array::new();
-       for position in query.iter(&self.world) {
-         println!("{:?}", position);
-         let b = JsValue::from_serde(position).unwrap();
-         //a.push(b);
-       }
-
-       1.3
-    */
-    //JsValue::from_serde(&example).unwrap()
-
-    //let b = query.iter(&self.world).collect();
-    //let c = clone_vec(b);
-
-    //let b = query.iter(&self.world).collect();
-
-    /*
-     let res = query
-      .iter(&self.world)
-      .into_iter()
-      .map(JsValue::from_serde.unwrap())
-      .collect();
-    res */
-
-    //vec_to_js_array(c)
-
-    /*
-        let kaka = vec![JsValue::NULL, JsValue::UNDEFINED];
-        let res = c.into_iter().map(JsValue::from).collect();
-    */
-    //let res = c.into_iter().map(JsValue::from).collect();
-
-    //1.2
-
-    //let vec_of_position = clone_vec(vec_of_positionrefs);
-
-    //println!("vec_of_position");
-
-    //vec_of_positionrefs..map(JsValue::from).collect()
-
-    //let res = vec_of_position.into_iter().map(JsValue::from).collect();
-    //res
-
-    // you can then iterate through the components found in the world
-    /*
-    let mut vec_of_position: Vec<Position> = vec![];
-    for position in query.iter(&self.world) {
-      println!("{:?}", position);
-      vec_of_position.push(Position {
-        x: position.x.clone(),
-        y: position.y.clone(),
-      })
-    }
-    let res = vec_of_position.into_iter().map(JsValue::from).collect();
-    res
-    */
-
-    /*
-    println!("From inside stuff");
-
-    let vec_of_positionrefs = query.iter(&self.world).collect::<Vec<&Position>>();
-    println!("vec_of_positionrefs {:?}", vec_of_positionrefs);
-
-    //let vec_of_position = query.iter(&self.world).cloned().collect::<Vec<Position>>();
-    let iterthing = query.iter(&self.world);
-
-    let vec_of_position = query
-      .iter(&self.world)
-      .cloned()
-      .cloned()
-      .collect::<Vec<Position>>();
-
-    let res = vec_of_position.into_iter().map(JsValue::from).collect();
-    res
-    */
+    1
   }
 }
 
-fn slice_to_js_array(slice: &[u32]) -> Array {
-  slice.iter().copied().map(JsValue::from).collect()
-}
+fn update_positions(world: &mut World) {
+  let mut query = <(&Velocity, &mut Position)>::query();
 
-fn vec_to_js_array(vec: Vec<u32>) -> Array {
-  vec.into_iter().map(JsValue::from).collect()
-}
-
-fn array_to_js_array(array: [u32; 5]) -> Array {
-  array.iter().copied().map(JsValue::from).collect()
-}
-
-pub fn clone_vec<T: Clone>(vec: Vec<&T>) -> Vec<T> {
-  vec.into_iter().cloned().collect()
-}
-
-pub fn clone_slice<T: Clone>(slice: &[&T]) -> Vec<T> {
-  slice.iter().cloned().cloned().collect()
+  for (velocity, position) in query.iter_mut(world) {
+    position.x += velocity.dx;
+    position.y += velocity.dy;
+  }
 }
 
 pub fn add(left: usize, right: usize) -> usize {
