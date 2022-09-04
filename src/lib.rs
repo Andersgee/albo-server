@@ -72,20 +72,30 @@ impl Game {
     js_array
   }
 
-  pub fn run_systems(&mut self) -> i32 {
+  pub fn run_systems(&mut self) {
     update_positions(&mut self.world, &mut self.resources);
+  }
 
-    1
+  pub fn set_player_input(&mut self, player_id: u32, player_input: f32) {
+    update_positions(&mut self.world, &mut self.resources);
   }
 }
 
 fn update_positions(world: &mut World, resources: &mut Resources) {
   let mut query = <(&Velocity, &mut Position)>::query();
 
+  //let time = resources.get(Time);
+
   for (velocity, position) in query.iter_mut(world) {
     position.x += velocity.dx;
     position.y += velocity.dy;
   }
+}
+
+#[system(for_each)]
+fn update_positions_hmm(pos: &mut Position, vel: &Velocity, #[resource] time: &Time) {
+  pos.x += vel.dx * time.elapsed_seconds;
+  pos.y += vel.dy * time.elapsed_seconds;
 }
 
 pub fn add(left: usize, right: usize) -> usize {

@@ -10,6 +10,7 @@ console.log("game.state", game.state);
 console.log("before run_systems, game.stuff:", game.stuff);
 game.run_systems();
 console.log("after run_systems, game.stuff:", game.stuff);
+console.log("game.stuff[0]:", game.stuff[0]);
 const PORT = 8080;
 
 const sockets: Map<number, WebSocket> = new Map();
