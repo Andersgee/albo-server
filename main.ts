@@ -8,6 +8,7 @@ console.log(game);
 
 console.log("game.state", game.state);
 console.log("game.stuff", game.stuff);
+console.log("game.example", game.example);
 
 const PORT = 8080;
 

@@ -1,11 +1,14 @@
+use std::collections::HashMap;
+
 use js_sys::Array;
 use legion::*;
+use serde::{Deserialize, Serialize};
 use wasm_bindgen::prelude::*;
+
 //use js_sys::Uint8Array;
 //use std::cell::{RefCell, RefMut};
 
-#[derive(Clone, Copy, Debug, PartialEq)]
-#[wasm_bindgen]
+#[derive(Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
 pub struct Position {
   x: f32,
   y: f32,
@@ -20,6 +23,13 @@ struct Velocity {
 pub struct Game {
   world: World,
   kek: f32,
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct Example {
+  pub field1: HashMap<u32, String>,
+  pub field2: Vec<Vec<f32>>,
+  pub field3: [f32; 4],
 }
 
 #[wasm_bindgen]
@@ -41,20 +51,58 @@ impl Game {
   }
 
   #[wasm_bindgen(getter)]
+  pub fn example(&self) -> JsValue {
+    let mut field1 = HashMap::new();
+    field1.insert(0, String::from("ex"));
+    let example = Example {
+      field1,
+      field2: vec![vec![1., 2.], vec![3., 4.]],
+      field3: [1., 2., 3., 4.],
+    };
+
+    JsValue::from_serde(&example).unwrap()
+  }
+
+  #[wasm_bindgen(getter)]
   pub fn stuff(&self) -> Array {
     let mut query = <&Position>::query();
 
-    //let vec_of_positionrefs = query.iter(&self.world).collect();
+    let vec_of_positionrefs = query.iter(&self.world).collect::<Vec<&Position>>();
 
-    for position in query.iter(&self.world) {
-      println!("{:?}", position);
-    }
+    //vec to js array
+    let res: Array = vec_of_positionrefs
+      .into_iter()
+      .map(|p| JsValue::from_serde(p).unwrap())
+      .collect();
 
-    let b: Vec<&Position> = query.iter(&self.world).collect();
-    let c = clone_vec(b);
-
-    let res = c.into_iter().map(JsValue::from).collect();
     res
+    /*
+       let mut a = Array::new();
+       for position in query.iter(&self.world) {
+         println!("{:?}", position);
+         let b = JsValue::from_serde(position).unwrap();
+         //a.push(b);
+       }
+
+       1.3
+    */
+    //JsValue::from_serde(&example).unwrap()
+
+    //let b = query.iter(&self.world).collect();
+    //let c = clone_vec(b);
+
+    //let b = query.iter(&self.world).collect();
+
+    /*
+     let res = query
+      .iter(&self.world)
+      .into_iter()
+      .map(JsValue::from_serde.unwrap())
+      .collect();
+    res */
+
+    //vec_to_js_array(c)
+
     /*
         let kaka = vec![JsValue::NULL, JsValue::UNDEFINED];
         let res = c.into_iter().map(JsValue::from).collect();
@@ -105,6 +153,18 @@ impl Game {
     res
     */
   }
+}
+
+fn slice_to_js_array(slice: &[u32]) -> Array {
+  slice.iter().copied().map(JsValue::from).collect()
+}
+
+fn vec_to_js_array(vec: Vec<u32>) -> Array {
+  vec.into_iter().map(JsValue::from).collect()
+}
+
+fn array_to_js_array(array: [u32; 5]) -> Array {
+  array.iter().copied().map(JsValue::from).collect()
 }
 
 pub fn clone_vec<T: Clone>(vec: Vec<&T>) -> Vec<T> {
