@@ -1,3 +1,4 @@
+use gl_matrix::common::*;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
@@ -7,14 +8,9 @@ pub struct Player {
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
-pub struct Position {
-  pub x: f32,
-  pub y: f32,
-}
-#[derive(Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
-pub struct Velocity {
-  pub dx: f32,
-  pub dy: f32,
+pub struct Transform {
+  pub position: Vec3,
+  pub velocity: Vec3,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]

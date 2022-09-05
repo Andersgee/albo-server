@@ -29,18 +29,8 @@ impl Game {
     });
 
     let schedule = Schedule::builder()
-      .add_system(systems::position::run_system())
+      .add_system(systems::transform::transform_system())
       .build();
-
-    let _entity: Entity = world.push((
-      components::Position { x: 0.0, y: 0.0 },
-      components::Velocity { dx: 0.0, dy: 0.0 },
-    ));
-    let _entity2: Entity = world.push((
-      components::Position { x: 1.2, y: 3.4 },
-      components::Velocity { dx: 88.0, dy: 9.2 },
-    ));
-    let _entity3: Entity = world.push((components::Position { x: 0.2, y: 5.6 },));
 
     world.push((components::Renderable {
       vao: components::Vao::Floor,
@@ -60,17 +50,6 @@ impl Game {
   //run all systems (as defined by Schedule)
   pub fn tick(&mut self) {
     self.schedule.execute(&mut self.world, &mut self.resources)
-  }
-
-  #[wasm_bindgen(getter)]
-  pub fn state(&self) -> Array {
-    let mut query = <(Option<&components::Velocity>, &components::Position)>::query();
-    let js_array: Array = query
-      .iter(&self.world)
-      .map(|p| JsValue::from_serde(&p).unwrap())
-      .collect();
-
-    js_array
   }
 
   #[wasm_bindgen(getter)]

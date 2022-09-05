@@ -13,4 +13,5 @@ legion = { version = "*", default-features = false, features = ["wasm-bindgen", 
 wasm-bindgen = { version = "0.2.82", features = ["serde-serialize"] }
 js-sys = "0.3.59"
 serde = { version = "1.0.144", features = ["derive"] }
+gl_matrix = "0.0.2"
 
