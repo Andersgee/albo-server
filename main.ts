@@ -14,8 +14,8 @@ let id_counter = 1;
 /** update state and send to all connected sockets */
 function updateGameState() {
   game.tick();
-  const state = game.state;
-  const data = JSON.stringify(state);
+  const renderable = game.renderable;
+  const data = JSON.stringify(renderable);
   for (const [_, socket] of sockets) {
     socket.send(data);
   }

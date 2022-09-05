@@ -6,6 +6,7 @@ use js_sys::Array;
 use legion::*;
 use wasm_bindgen::prelude::*;
 
+use gl_matrix::{mat4, vec3};
 use std::collections::HashMap;
 
 #[wasm_bindgen]
@@ -75,12 +76,26 @@ impl Game {
   }
 
   pub fn add_player(&mut self, socket_id: u32) {
-    let entity = self.world.push((components::Player {
+    let player_entity = self.world.push((components::Player {
       socket_id,
       input: [0, 0, 0, 0],
     },));
 
-    self.socketmap.insert(socket_id, entity);
+    self.socketmap.insert(socket_id, player_entity);
+
+    let _bird = self.world.push((
+      components::Controlled {
+        owner_socket_id: socket_id,
+      },
+      components::Transform {
+        position: vec3::create(),
+        velocity: vec3::create(),
+      },
+      components::Renderable {
+        vao: components::Vao::Bird,
+        model_mat: mat4::create(),
+      },
+    ));
   }
 
   pub fn remove_player(&mut self, socket_id: u32) {

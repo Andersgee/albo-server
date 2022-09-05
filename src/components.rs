@@ -27,5 +27,5 @@ pub struct Renderable {
 
 #[derive(Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
 pub struct Controlled {
-  owner_socket_id: u32,
+  pub owner_socket_id: u32,
 }
