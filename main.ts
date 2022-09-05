@@ -2,43 +2,21 @@ import { serve } from "https://deno.land/std@0.153.0/http/server.ts";
 import init, { Game } from "./pkg/nextjs_rust_playground_server.js";
 
 await init();
-const game = new Game();
-
-console.log(game);
-
-console.log("game.state", game.state);
-console.log("before game.tick(), game.stuff:", game.stuff);
-game.tick();
-console.log("after game.tick(), game.stuff:", game.stuff);
-game.tick();
-console.log("after game.tick(), game.stuff:", game.stuff);
-console.log("game.stuff[0]:", game.stuff[0]);
-
-console.log("\n\n");
-
-console.log("before add_player:", game.players);
-game.add_player(9);
-game.add_player(10);
-console.log("after add_player:", game.players);
-game.set_player_input(9, 0, 0, 0, 1);
-console.log("after set_player_input:", game.players);
-game.set_player_input(10, 1, 0, 0, 0);
-console.log("after set_player_input:", game.players);
+const game = new Game(); //glue for src/lib.rs
 
 const PORT = 8080;
 
 const sockets: Map<number, WebSocket> = new Map();
-const playerInputs: Map<number, Uint8Array> = new Map();
 
-const entities = { hej: 0 };
-
-const TICKS_PER_SECOND = 1;
+const TICKS_PER_SECOND = 1; //keep this
 const TICK_DURATION_MS = 1000 / TICKS_PER_SECOND;
 
-function gameloop() {
-  //update state and send to all connected sockets
-  entities.hej += 1;
-  const data = JSON.stringify(entities);
+/** update state and send to all connected sockets */
+function updategamestate() {
+  game.tick();
+  const state = game.state;
+  //entities.hej += 1;
+  const data = JSON.stringify(state);
   for (const [_, socket] of sockets) {
     socket.send(data);
   }
@@ -46,13 +24,15 @@ function gameloop() {
 
 let intervalId: number | null = null;
 
+/** start game if its not running */
 function maybeStartGameLoop() {
   if (!intervalId) {
-    intervalId = setInterval(gameloop, TICK_DURATION_MS);
+    intervalId = setInterval(updategamestate, TICK_DURATION_MS);
     console.log("started game loop");
   }
 }
 
+/** stop game if there no players */
 function maybeStopGameLoop() {
   if ([...sockets.keys()].length < 1 && intervalId) {
     clearInterval(intervalId);
@@ -61,8 +41,7 @@ function maybeStopGameLoop() {
   }
 }
 
-/**  */
-let socketId = 1;
+let last_socket_id = 1;
 
 await serve(
   (req: Request) => {
@@ -72,13 +51,14 @@ await serve(
 
     const { socket, response } = Deno.upgradeWebSocket(req);
 
-    const id = socketId;
-    socketId += 1;
-    console.log(`Client connected, it got id: ${id}`);
+    const socket_id = last_socket_id;
+    last_socket_id += 1;
+    console.log(`Client connected, it got id: ${socket_id}`);
 
     socket.onopen = () => {
-      sockets.set(id, socket);
-      console.log("onopen");
+      sockets.set(socket_id, socket);
+      game.add_player(socket_id);
+      console.log("onopen, game.players:", game.players);
       maybeStartGameLoop();
     };
     socket.onmessage = ({ data }) => {
@@ -89,21 +69,32 @@ await serve(
 
       if (data instanceof ArrayBuffer) {
         const playerInput = new Uint8Array(data);
-        playerInputs.set(id, playerInput);
+        //playerInputs.set(id, playerInput);
 
-        const [stepForward, stepBackward, stepLeft, stepRight] = playerInput;
+        const [step_forward, step_backward, step_left, step_right] =
+          playerInput;
+        game.set_player_input(
+          socket_id,
+          step_forward,
+          step_backward,
+          step_left,
+          step_right
+        );
+
         //console.log("stepForward:", stepForward);
         console.log("playerInput:", playerInput);
       }
     };
     socket.onerror = (e) => {
-      sockets.delete(id);
-      console.log("onerror:", e);
+      sockets.delete(socket_id);
+      game.remove_player(socket_id);
+      console.log("onerror, game.players:", game.players);
       maybeStopGameLoop();
     };
     socket.onclose = () => {
-      sockets.delete(id);
-      console.log("onclose");
+      sockets.delete(socket_id);
+      game.remove_player(socket_id);
+      console.log("onclose, game.players:", game.players);
       maybeStopGameLoop();
     };
 

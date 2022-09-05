@@ -57,13 +57,8 @@ impl Game {
   }
 
   #[wasm_bindgen(getter)]
-  pub fn state(&self) -> f64 {
-    //placeholder for now
-    3.1
-  }
-
-  #[wasm_bindgen(getter)]
-  pub fn stuff(&self) -> Array {
+  /** everything that should be sent to clients */
+  pub fn state(&self) -> Array {
     let mut query = <(Option<&components::Velocity>, &components::Position)>::query();
     let js_array: Array = query
       .iter(&self.world)
@@ -93,7 +88,20 @@ impl Game {
     self.socketmap.insert(socket_id, entity);
   }
 
-  pub fn set_player_input(&mut self, socket_id: u32, a: u32, b: u32, c: u32, d: u32) {
+  pub fn remove_player(&mut self, socket_id: u32) {
+    let entity = self.socketmap.get(&socket_id).unwrap().to_owned();
+    self.world.remove(entity);
+    self.socketmap.remove(&socket_id);
+  }
+
+  pub fn set_player_input(
+    &mut self,
+    socket_id: u32,
+    step_forward: u8,
+    step_backward: u8,
+    step_left: u8,
+    step_right: u8,
+  ) {
     let entity = self.socketmap.get(&socket_id).unwrap().to_owned();
 
     if let Some(mut entry) = self.world.entry(entity) {
@@ -107,7 +115,7 @@ impl Game {
       //update player component
       entry.add_component(components::Player {
         socket_id,
-        input: [a as u8, b as u8, c as u8, d as u8],
+        input: [step_forward, step_backward, step_left, step_right],
       });
     }
   }
