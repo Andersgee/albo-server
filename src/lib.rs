@@ -6,11 +6,14 @@ use js_sys::Array;
 use legion::*;
 use wasm_bindgen::prelude::*;
 
+use std::collections::HashMap;
+
 #[wasm_bindgen]
 pub struct Game {
   world: World,
   resources: Resources,
   schedule: Schedule,
+  socketmap: HashMap<u32, Entity>,
 }
 
 #[wasm_bindgen]
@@ -44,6 +47,7 @@ impl Game {
       world,
       resources,
       schedule,
+      socketmap: HashMap::new(),
     }
   }
 
@@ -69,10 +73,42 @@ impl Game {
     js_array
   }
 
+  #[wasm_bindgen(getter)]
+  pub fn players(&self) -> Array {
+    let mut query = <(&components::Player,)>::query();
+    let js_array: Array = query
+      .iter(&self.world)
+      .map(|p| JsValue::from_serde(&p).unwrap())
+      .collect();
+
+    js_array
+  }
+
   pub fn add_player(&mut self, socket_id: u32) {
-    self.world.push((components::Player {
+    let entity = self.world.push((components::Player {
       socket_id,
       input: [0, 0, 0, 0],
     },));
+
+    self.socketmap.insert(socket_id, entity);
+  }
+
+  pub fn set_player_input(&mut self, socket_id: u32, a: u32, b: u32, c: u32, d: u32) {
+    let entity = self.socketmap.get(&socket_id).unwrap().to_owned();
+
+    if let Some(mut entry) = self.world.entry(entity) {
+      // access information about the entity's archetype
+      println!(
+        "{:?} has {:?}",
+        entity,
+        entry.archetype().layout().component_types()
+      );
+
+      //update player component
+      entry.add_component(components::Player {
+        socket_id,
+        input: [a as u8, b as u8, c as u8, d as u8],
+      });
+    }
   }
 }

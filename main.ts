@@ -13,6 +13,15 @@ console.log("after game.tick(), game.stuff:", game.stuff);
 game.tick();
 console.log("after game.tick(), game.stuff:", game.stuff);
 console.log("game.stuff[0]:", game.stuff[0]);
+
+console.log("\n\n");
+
+console.log("before add_player:", game.players);
+game.add_player(9);
+console.log("after add_player:", game.players);
+game.set_player_input(9, 0, 0, 1, 0);
+console.log("after set_player_input:", game.players);
+
 const PORT = 8080;
 
 const sockets: Map<number, WebSocket> = new Map();
