@@ -10,6 +10,8 @@ console.log("game.state", game.state);
 console.log("before game.tick(), game.stuff:", game.stuff);
 game.tick();
 console.log("after game.tick(), game.stuff:", game.stuff);
+game.tick();
+console.log("after game.tick(), game.stuff:", game.stuff);
 console.log("game.stuff[0]:", game.stuff[0]);
 const PORT = 8080;
 
