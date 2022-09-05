@@ -23,7 +23,6 @@ impl Game {
     let mut world = World::default();
 
     let mut resources = Resources::default();
-    //resources.insert(vec!["Jane Doe", "John Smith"]);
 
     resources.insert(resources::Time {
       elapsed_seconds: 2.0,
@@ -43,6 +42,13 @@ impl Game {
     ));
     let _entity3: Entity = world.push((components::Position { x: 0.2, y: 5.6 },));
 
+    world.push((components::Renderable {
+      vao: components::Vao::Floor,
+      model_mat: [
+        1., 0., 0., 0., 0., 1., 0., 0., 0., 0., 1., 0., 0., 0., 0., 1.,
+      ],
+    },));
+
     Self {
       world,
       resources,
@@ -57,9 +63,19 @@ impl Game {
   }
 
   #[wasm_bindgen(getter)]
-  /** everything that should be sent to clients */
   pub fn state(&self) -> Array {
     let mut query = <(Option<&components::Velocity>, &components::Position)>::query();
+    let js_array: Array = query
+      .iter(&self.world)
+      .map(|p| JsValue::from_serde(&p).unwrap())
+      .collect();
+
+    js_array
+  }
+
+  #[wasm_bindgen(getter)]
+  pub fn renderable(&self) -> Array {
+    let mut query = <&components::Renderable>::query();
     let js_array: Array = query
       .iter(&self.world)
       .map(|p| JsValue::from_serde(&p).unwrap())

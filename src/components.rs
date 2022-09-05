@@ -16,3 +16,20 @@ pub struct Velocity {
   pub dx: f32,
   pub dy: f32,
 }
+
+#[derive(Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
+pub enum Vao {
+  Floor,
+  Bird,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
+pub struct Renderable {
+  pub vao: Vao,
+  pub model_mat: [f32; 16],
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
+pub struct Controlled {
+  owner_socket_id: u32,
+}

@@ -12,7 +12,7 @@ let intervalId: number | null = null;
 let id_counter = 1;
 
 /** update state and send to all connected sockets */
-function updategamestate() {
+function updateGameState() {
   game.tick();
   const state = game.state;
   const data = JSON.stringify(state);
@@ -20,12 +20,13 @@ function updategamestate() {
     socket.send(data);
   }
   console.log("game.players:", game.players);
+  console.log("game.renderable:", game.renderable);
 }
 
 /** start game if its not running */
 function maybeStartGameLoop() {
   if (!intervalId) {
-    intervalId = setInterval(updategamestate, TICK_DURATION_MS);
+    intervalId = setInterval(updateGameState, TICK_DURATION_MS);
     console.log("started game loop");
   }
 }
@@ -39,21 +40,21 @@ function maybeStopGameLoop() {
   }
 }
 
-function onopen(socket_id: number, socket: WebSocket) {
+function onSocketOpen(socket_id: number, socket: WebSocket) {
   sockets.set(socket_id, socket);
   game.add_player(socket_id);
   console.log("onopen, game.players:", game.players);
   maybeStartGameLoop();
 }
 
-function onclose(socket_id: number) {
+function onSocketClose(socket_id: number) {
   sockets.delete(socket_id);
   game.remove_player(socket_id);
   console.log("onclose, game.players:", game.players);
   maybeStopGameLoop();
 }
 
-function onmessage(socket_id: number, data: string | ArrayBuffer | Blob) {
+function onSocketMessage(socket_id: number, data: string | ArrayBuffer | Blob) {
   //data can be string | ArrayBuffer | Blob
   //console.log('typeof data == "string"', typeof data == "string");
   //console.log("data instanceof ArrayBuffer", data instanceof ArrayBuffer);
@@ -83,10 +84,10 @@ await serve(
 
     const socket_id = id_counter;
     id_counter += 1;
-    socket.onopen = () => onopen(socket_id, socket);
-    socket.onclose = () => onclose(socket_id);
-    socket.onerror = () => onclose(socket_id);
-    socket.onmessage = (e) => onmessage(socket_id, e.data);
+    socket.onopen = () => onSocketOpen(socket_id, socket);
+    socket.onclose = () => onSocketClose(socket_id);
+    socket.onerror = () => onSocketClose(socket_id);
+    socket.onmessage = (e) => onSocketMessage(socket_id, e.data);
     return response;
   },
   {
