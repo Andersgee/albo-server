@@ -7,9 +7,9 @@ const game = new Game();
 console.log(game);
 
 console.log("game.state", game.state);
-console.log("before run_systems, game.stuff:", game.stuff);
-game.run_systems();
-console.log("after run_systems, game.stuff:", game.stuff);
+console.log("before game.tick(), game.stuff:", game.stuff);
+game.tick();
+console.log("after game.tick(), game.stuff:", game.stuff);
 console.log("game.stuff[0]:", game.stuff[0]);
 const PORT = 8080;
 

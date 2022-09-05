@@ -40,3 +40,7 @@ summary on plan:
     - The full fledged framework would be [Bevy](https://github.com/bevyengine/bevy).
 
 - When/if something heavier need to be done on client, can try rust-wasm there aswell, for example game state interpolation or something.
+
+## references
+
+[Legion docs](https://docs.rs/legion/latest/legion)
