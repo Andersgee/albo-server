@@ -18,8 +18,11 @@ console.log("\n\n");
 
 console.log("before add_player:", game.players);
 game.add_player(9);
+game.add_player(10);
 console.log("after add_player:", game.players);
-game.set_player_input(9, 0, 0, 1, 0);
+game.set_player_input(9, 0, 0, 0, 1);
+console.log("after set_player_input:", game.players);
+game.set_player_input(10, 1, 0, 0, 0);
 console.log("after set_player_input:", game.players);
 
 const PORT = 8080;
