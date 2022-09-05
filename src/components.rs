@@ -22,7 +22,7 @@ pub enum Vao {
 #[derive(Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
 pub struct Renderable {
   pub vao: Vao,
-  pub model_mat: [f32; 16],
+  pub model_mat: Mat4,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]

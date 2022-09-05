@@ -30,14 +30,14 @@ impl Game {
     });
 
     let schedule = Schedule::builder()
+      .add_system(systems::input::input_system())
       .add_system(systems::transform::transform_system())
+      .add_system(systems::renderable::renderable_system())
       .build();
 
     world.push((components::Renderable {
       vao: components::Vao::Floor,
-      model_mat: [
-        1., 0., 0., 0., 0., 1., 0., 0., 0., 0., 1., 0., 0., 0., 0., 1.,
-      ],
+      model_mat: mat4::create(),
     },));
 
     Self {
@@ -76,16 +76,10 @@ impl Game {
   }
 
   pub fn add_player(&mut self, socket_id: u32) {
-    let player_entity = self.world.push((components::Player {
-      socket_id,
-      input: [0, 0, 0, 0],
-    },));
-
-    self.socketmap.insert(socket_id, player_entity);
-
-    let _bird = self.world.push((
-      components::Controlled {
-        owner_socket_id: socket_id,
+    let entity = self.world.push((
+      components::Player {
+        socket_id,
+        input: [0, 0, 0, 0],
       },
       components::Transform {
         position: vec3::create(),
@@ -96,6 +90,8 @@ impl Game {
         model_mat: mat4::create(),
       },
     ));
+
+    self.socketmap.insert(socket_id, entity);
   }
 
   pub fn remove_player(&mut self, socket_id: u32) {
