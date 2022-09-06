@@ -1,5 +1,3 @@
-use std::borrow::Borrow;
-
 use crate::{components, resources};
 use gl_matrix::{common::Vec3, vec3};
 use legion::*;

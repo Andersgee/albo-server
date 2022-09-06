@@ -19,15 +19,15 @@ summary on plan:
 
 - server
 
-  1. listen for player input
-  2. run game logic <- call wasm here
-  3. emit game state
+  1. [x] listen for player input
+  2. [x] run game logic <- call wasm here
+  3. [x] emit game state
 
 - client
 
-  1. listen for keypresses and send to server
-  2. listen for game state update and draw it
-  3. optional: proper interpolation of state clientside, "netcode rollback" etc
+  1. [x] listen for keypresses and send to server
+  2. [x] listen for game state update and draw it
+  3. [ ] optional: proper interpolation of state clientside, "netcode rollback" etc
 
 ## comments
 
