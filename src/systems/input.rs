@@ -10,12 +10,12 @@ pub fn input(
   player: &components::Player,
   #[resource] time: &resources::Time,
 ) {
-  //keep it simple for now. player controls velocity in
+  //keep it basic for now. player controls velocity in
   //(forward/backward, right/left) directions
   //aka
   //(-z/+z, +x/-z) world coordinates
 
-  let movespeed: f32 = 1.0;
+  let ms: f32 = 0.1; //move speed
 
   let step_forward = player.input[0] != 0;
   let step_backward = player.input[1] != 0;
@@ -23,26 +23,35 @@ pub fn input(
   let step_right = player.input[3] != 0;
 
   let mut velocity = vec3::create();
+
   if step_forward && step_right {
-    velocity[2] = -D * movespeed;
-    velocity[0] = D * movespeed;
+    velocity[2] = -D * ms;
+    velocity[0] = D * ms;
   } else if step_forward && step_left {
-    velocity[2] = -D * movespeed;
-    velocity[0] = -D * movespeed;
+    velocity[2] = -D * ms;
+    velocity[0] = -D * ms;
   } else if step_backward && step_right {
-    velocity[2] = D * movespeed;
-    velocity[0] = D * movespeed;
+    velocity[2] = D * ms;
+    velocity[0] = D * ms;
   } else if step_backward && step_left {
-    velocity[2] = D * movespeed;
-    velocity[0] = -D * movespeed;
+    velocity[2] = D * ms;
+    velocity[0] = -D * ms;
   } else if step_forward {
-    velocity[2] = -movespeed;
+    velocity[2] = -ms;
   } else if step_backward {
-    velocity[2] = movespeed;
+    velocity[2] = ms;
   } else if step_left {
-    velocity[0] = -movespeed;
+    velocity[0] = -ms;
   } else if step_right {
-    velocity[0] = movespeed;
+    velocity[0] = ms;
+  }
+
+  if step_forward && step_backward {
+    velocity[2] = 0.;
+  }
+
+  if step_left && step_right {
+    velocity[0] = 0.;
   }
 
   transform.velocity = velocity;

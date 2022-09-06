@@ -5,7 +5,8 @@ await init();
 const game = new Game(); //glue for src/lib.rs
 const PORT = 8080;
 const sockets: Map<number, WebSocket> = new Map();
-const TICKS_PER_SECOND = 1; //keep this
+//const TICKS_PER_SECOND = 1; //debug
+const TICKS_PER_SECOND = 60;
 const TICK_DURATION_MS = 1000 / TICKS_PER_SECOND;
 
 let intervalId: number | null = null;
@@ -17,7 +18,15 @@ function updateGameState() {
   const renderable = game.renderable;
   const data = JSON.stringify(renderable);
   for (const [_, socket] of sockets) {
-    socket.send(data);
+    //if (socket.readyState === socket.OPEN) {
+    //  socket.send(data);
+    //}
+    try {
+      //might have closed socket in the time it takes to do game.tick() )
+      socket.send(data);
+    } catch {
+      console.log("didnt send because socket is closed");
+    }
   }
   console.log("game.players:", game.players);
   console.log("game.renderable:", game.renderable);
