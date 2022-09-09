@@ -15,8 +15,8 @@ let id_counter = 1;
 /** update state and send to all connected sockets */
 function updateGameState() {
   game.tick();
-  const renderable = game.renderable;
-  const data = JSON.stringify(renderable);
+  const client_entities = game.client_entities;
+  const data = JSON.stringify(client_entities);
   for (const [_, socket] of sockets) {
     //if (socket.readyState === socket.OPEN) {
     //  socket.send(data);
@@ -29,7 +29,7 @@ function updateGameState() {
     }
   }
   console.log("game.players:", game.players);
-  console.log("game.renderable:", game.renderable);
+  console.log("game.client_entities:", game.client_entities);
 }
 
 /** start game if its not running */

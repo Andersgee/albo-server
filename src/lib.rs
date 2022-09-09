@@ -35,10 +35,16 @@ impl Game {
       .add_system(systems::renderable::renderable_system())
       .build();
 
-    world.push((components::Renderable {
-      vao: components::Vao::Floor,
-      model_mat: mat4::create(),
-    },));
+    world.push((
+      components::Renderable {
+        vao: components::Vao::Floor,
+        model_mat: mat4::create(),
+      },
+      components::Transform {
+        position: vec3::create(),
+        velocity: vec3::create(),
+      },
+    ));
 
     Self {
       world,
@@ -54,8 +60,8 @@ impl Game {
   }
 
   #[wasm_bindgen(getter)]
-  pub fn renderable(&self) -> Array {
-    let mut query = <&components::Renderable>::query();
+  pub fn client_entities(&self) -> Array {
+    let mut query = <(&components::Renderable, &components::Transform)>::query();
     let js_array: Array = query
       .iter(&self.world)
       .map(|p| JsValue::from_serde(&p).unwrap())
