@@ -5,8 +5,7 @@ await init();
 const game = new Game(); //glue for src/lib.rs
 const PORT = 8080;
 const sockets: Map<number, WebSocket> = new Map();
-const TICKS_PER_SECOND = 1; //debug
-//const TICKS_PER_SECOND = 60;
+const TICKS_PER_SECOND = 15.0;
 const TICK_DURATION_MS = 1000 / TICKS_PER_SECOND;
 
 let intervalId: number | null = null;
