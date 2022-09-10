@@ -1,0 +1,12 @@
+{
+  "name": "albo_server",
+  "version": "0.1.0",
+  "files": [
+    "albo_server_bg.wasm",
+    "albo_server.js",
+    "albo_server.d.ts"
+  ],
+  "module": "albo_server.js",
+  "types": "albo_server.d.ts",
+  "sideEffects": false
+}

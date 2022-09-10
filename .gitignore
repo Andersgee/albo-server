@@ -1,7 +1,7 @@
 .vscode
 /target
 /Cargo.lock
-/pkg
+#/pkg
 
 # Added by cargo
 #
