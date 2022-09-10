@@ -1,5 +1,5 @@
 import { serve } from "https://deno.land/std@0.153.0/http/server.ts";
-import init, { Game } from "./pkg/nextjs_rust_playground_server.js";
+import init, { Game } from "./pkg/albo_server.js";
 
 await init();
 const game = new Game(); //glue for src/lib.rs
@@ -27,8 +27,8 @@ function updateGameState() {
       console.log("didnt send because socket is closed");
     }
   }
-  console.log("game.players:", game.players);
-  console.log("game.client_entities:", game.client_entities);
+  //console.log("game.players:", game.players);
+  //console.log("game.client_entities:", game.client_entities);
 }
 
 /** start game if its not running */
@@ -72,7 +72,7 @@ function onSocketMessage(socket_id: number, data: string | ArrayBuffer | Blob) {
     const playerInput = new Uint8Array(data);
 
     const [step_forward, step_backward, step_left, step_right] = playerInput;
-    console.log("recieve message, playerInput:", playerInput);
+    //console.log("recieve message, playerInput:", playerInput);
 
     game.set_player_input(
       socket_id,

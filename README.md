@@ -1,9 +1,12 @@
-# lowpoly-battle-server
+# albo-server
+
+dev
 
 ```sh
-wasm-pack build --target web
-deno run --allow-net --allow-read main.ts
+./dev.sh
 ```
+
+test
 
 ```sh
 cargo test -- --nocapture

@@ -1,5 +1,5 @@
 [package]
-name = "nextjs-rust-playground-server"
+name = "albo_server"
 version = "0.1.0"
 edition = "2021"
 
