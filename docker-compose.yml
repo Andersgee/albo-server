@@ -1,0 +1,12 @@
+#sudo docker-compose -f docker-compose.yml -f docker-compose.prod.yml up
+version: "3.8"
+
+services:
+  api:
+    image: andersgee/albo-server
+    restart: unless-stopped
+    ports:
+      - $API_PORT_EXPOSED:$API_PORT
+    build:
+      context: .
+      dockerfile: ./Dockerfile
